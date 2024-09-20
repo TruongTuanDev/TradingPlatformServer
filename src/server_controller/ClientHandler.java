@@ -60,7 +60,7 @@ public class ClientHandler extends Thread {
                         if (user != null) {
                             out.println("register-success");
                         } else {
-                            out.println("register-fail");
+                            out.println("register-false");
                         }
                         break;
 
