@@ -1,6 +1,6 @@
 package dto;
 
-public class Request {
+public class SignUpForm {
 	private String username;
     private String password;
     private String email;
@@ -29,7 +29,5 @@ public class Request {
 		this.email = email;
 	}
 
-	public void SignUpForm() {
-    	
-    }
+
 }

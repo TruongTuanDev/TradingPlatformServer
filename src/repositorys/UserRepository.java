@@ -14,7 +14,7 @@ public class UserRepository {
 	static PreparedStatement ps = null;
 	static ResultSet rs = null;
 	static Statement st = null;
-	public void save(User user) {
+	public User save(User user) {
 		try {
 			LocalDate nDate = LocalDate.now();
 			String date = nDate + "";
@@ -28,5 +28,6 @@ public class UserRepository {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return user;
     }
 }
