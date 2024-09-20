@@ -50,16 +50,21 @@ public class ClientHandler extends Thread {
 	                if (message == null) {
 	                    break;
 	                }
-	               
+	                String email="";
 		            String[] messageSplit = message.split(",");
-		            String username = messageSplit[3];
-		            String email = messageSplit[2];
+		            int lengthMessage = messageSplit.length;
+		            String username = messageSplit[1];
+		            String password = messageSplit[2];
+		            if(lengthMessage==4) {
+		            	email = messageSplit[3];
+		            }
 		            Object[] row = {clientIP, username, email, connectTime};
 		            tableModel.addRow(row);
 	                
 					System.out.println("Test : "+messageSplit[0]);
 					switch (messageSplit[0]) {
 					case "request-login": {
+						out.println("login-succses");
 						System.out.println("Mày muốn đăng nhập");
 						break;
 					}
