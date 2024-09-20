@@ -52,7 +52,13 @@ public class ClientHandler extends Thread {
                 // Xử lý thông điệp và thực hiện hành động
                 switch (messageSplit[0]) {
                     case "request-login":
-                        System.out.println("Mày muốn đăng nhập");
+                        boolean check=userService.checkUser(username, password);
+                        System.out.println(check);
+                        if(check) {
+                        	out.println("login-success");
+                        }else {
+                        	out.println("login-fail");
+                        }
                         break;
 
                     case "request-register":

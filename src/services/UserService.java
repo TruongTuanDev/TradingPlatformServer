@@ -16,4 +16,10 @@ public class UserService {
 	      user = userRepository.save(user);
 	      return user;
 	    }
+	public boolean checkUser(String userName,String password) {
+		  boolean isValid = false;
+		  userRepository = new UserRepository();
+		  isValid = userRepository.checklogin(userName,password);
+	      return isValid;
+	    }
 }

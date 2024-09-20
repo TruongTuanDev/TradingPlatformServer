@@ -30,4 +30,23 @@ public class UserRepository {
 		}
 		return user;
     }
+	public boolean checklogin(String username, String password) {
+	    boolean isValid = false;
+	    try {
+	        con = utils.ConnectDB.getConnection();
+	        String query = "SELECT * FROM accounts WHERE username = ? AND password = ?";
+	        ps = con.prepareStatement(query);
+	        ps.setString(1, username);
+	        ps.setString(2, password);
+	        rs = ps.executeQuery();
+	        if (rs.next()) {
+	            isValid = true; 
+	            System.out.println(isValid);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return isValid;
+	}
+
 }
