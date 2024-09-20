@@ -5,92 +5,83 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-
 import javax.swing.table.DefaultTableModel;
-
+import model.User;
 import services.UserService;
 
 public class ClientHandler extends Thread {
-	// Lớp xử lý cho từng client kết nối
-	    private Socket clientSocket;
-	    private DefaultTableModel tableModel;
-	    private BufferedReader in;
-	    private PrintWriter out;
-	    private String clientIP;
-	    private String connectTime;
-	    private boolean isClosed;
-	    private UserService userService;
+    private Socket clientSocket;
+    private DefaultTableModel tableModel;
+    private BufferedReader in;
+    private PrintWriter out;
+    private String clientIP;
+    private String connectTime;
+    private TCPServer server;
+    private UserService userService;
 
-	    public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime) {
-	        this.clientSocket = socket;
-	        this.tableModel = tableModel;
-	        this.clientIP = clientIP;
-	        this.connectTime = connectTime;
-	    }
-	    public BufferedReader getIs() {
-	        return in;
-	    }
+    public ClientHandler(Socket socket, DefaultTableModel tableModel, String clientIP, String connectTime, TCPServer server) {
+        this.clientSocket = socket;
+        this.tableModel = tableModel;
+        this.clientIP = clientIP;
+        this.connectTime = connectTime;
+        this.server = server;
+    }
 
-	    public PrintWriter getOs() {
-	        return out;
-	    }
-
-	    @Override
-	    public void run() {
-	    	userService = new UserService();
-	        try {
-	            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-	            out = new PrintWriter(clientSocket.getOutputStream(), true);
-	            System.out.println("Đã vào đây "+ isClosed);
-	            String message;
-	            while (isClosed == false) {
-	            	System.out.println("Đã vào đây "+ isClosed);
-	                message = in.readLine();
-	                System.out.println("Client gửi "+ message);
-	                if (message == null) {
-	                    break;
-	                }
-	                String email="";
-		            String[] messageSplit = message.split(",");
-		            int lengthMessage = messageSplit.length;
-		            String username = messageSplit[1];
-		            String password = messageSplit[2];
-		            if(lengthMessage==4) {
-		            	email = messageSplit[3];
-		            }
-		            Object[] row = {clientIP, username, email, connectTime};
-		            tableModel.addRow(row);
-	                
-					System.out.println("Test : "+messageSplit[0]);
-					switch (messageSplit[0]) {
-					case "request-login": {
-						out.println("login-succses");
-						System.out.println("Mày muốn đăng nhập");
-						break;
-					}
-					case "request-register" :{
-						
-						out.println("register-succses");
-						break;
-					}
-					case "request-check-username" :{
-						
-					}
-					default:
-						throw new IllegalArgumentException("Unexpected value: " + messageSplit[0]);
-					}
-					
+    @Override
+    public void run() {
+        userService = new UserService();
+        try {
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            String message;
+            while ((message = in.readLine()) != null) {
+                System.out.println("Client gửi: " + message);
+                String email="";
+                String[] messageSplit = message.split(",");
+                int lengthMessage = messageSplit.length;
+	            String username = messageSplit[1];
+	            String password = messageSplit[2];
+	            if(lengthMessage==4) {
+	            	email = messageSplit[3];
 	            }
-	        } catch (IOException e) {
-	        	isClosed = true;
-	            System.out.println("Client disconnected: " + clientSocket.getInetAddress());
-	        } finally {
-	            try {
-	                clientSocket.close();
-	            } catch (IOException e) {
-	                e.printStackTrace();
-	            }
-	        }
-	    }
+             
+                Object[] row = {clientIP, username, email, connectTime};
+//                Object[] row = {1, 1, 1, 1};
+	            tableModel.addRow(row);
+
+                // Xử lý thông điệp và thực hiện hành động
+                switch (messageSplit[0]) {
+                    case "request-login":
+                        System.out.println("Mày muốn đăng nhập");
+                        break;
+
+                    case "request-register":
+                        User user = userService.createUser(username, password, email);
+                        if (user != null) {
+                            out.println("register-success");
+                        } else {
+                            out.println("register-fail");
+                        }
+                        break;
+
+                    case "request-check-username":
+                        // Thực hiện kiểm tra tên người dùng (nếu cần)
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Unexpected value: " + messageSplit[0]);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Client disconnected: " + clientSocket.getInetAddress());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // Xóa client khỏi danh sách và cập nhật số lượng client
+            server.removeClient(clientSocket);
+        }
+    }
 }
-
