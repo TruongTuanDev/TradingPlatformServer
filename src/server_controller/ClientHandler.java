@@ -33,15 +33,18 @@ public class ClientHandler extends Thread {
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
-
             String message;
             while ((message = in.readLine()) != null) {
                 System.out.println("Client gửi: " + message);
-
+                String email="";
                 String[] messageSplit = message.split(",");
-                String username = messageSplit[3];
-                String email = messageSplit[2];
-                String password = messageSplit[1];
+                int lengthMessage = messageSplit.length;
+	            String username = messageSplit[1];
+	            String password = messageSplit[2];
+	            if(lengthMessage==4) {
+	            	email = messageSplit[3];
+	            }
+             
                 Object[] row = {clientIP, username, email, connectTime};
 //                Object[] row = {1, 1, 1, 1};
 	            tableModel.addRow(row);
