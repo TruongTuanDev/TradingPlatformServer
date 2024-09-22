@@ -2,10 +2,16 @@ package app;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+
 import server_controller.TCPServer;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.ServerSocket;
 
 public class TCPServerGUI extends JFrame {
     private JButton startButton;
@@ -57,6 +63,7 @@ public class TCPServerGUI extends JFrame {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+           
                 server = new TCPServer(tableModel, clientCountLabel, activeStatusLabel);
                 server.start();
                 startButton.setEnabled(false);

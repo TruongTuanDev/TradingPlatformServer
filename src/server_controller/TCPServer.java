@@ -1,6 +1,11 @@
 package server_controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -15,6 +20,7 @@ public class TCPServer extends Thread {
     private DefaultTableModel tableModel;
     private Set<Socket> clientSockets;
     private boolean isRunning = true;
+    private static Set<PrintWriter> clientWriters = new HashSet<>();
     private JLabel clientCountLabel;  // Nhãn hiển thị số lượng khách hàng
     private JLabel activeStatusLabel; // Nhãn hiển thị trạng thái server
 
@@ -28,8 +34,8 @@ public class TCPServer extends Thread {
     @Override
     public void run() {
         try {
-            serverSocket = new ServerSocket(9999);
-            System.out.println("Server started. Listening on port 9999...");
+            serverSocket = new ServerSocket(12345);
+            System.out.println("Server started. Listening on port 12345...");
 
             // Cập nhật trạng thái server
             activeStatusLabel.setText("Active: Yes");
